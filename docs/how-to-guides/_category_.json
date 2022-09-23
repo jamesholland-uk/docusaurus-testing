@@ -1,0 +1,8 @@
+{
+  "label": "How-To Guides",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "The steps required to achieve real-world objectives or solve real-world challenges."
+  }
+}
