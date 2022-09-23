@@ -94,6 +94,6 @@ Continue the tasks with a push (and commit) to the managed devices in the Device
 ## Test importing code
 
 import CodeBlock from '@theme/CodeBlock';
-import MyComponentSource from '!!raw-loader!./markdown-features.mdx';
+import MyComponentSource from '!!raw-loader!./panorama-config-commit-push.md';
 
 <CodeBlock language="jsx">{MyComponentSource}</CodeBlock>

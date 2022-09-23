@@ -1,0 +1,8 @@
+{
+  "label": "Background Info",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Discussion in higher level, explanation of why things are the way they are."
+  }
+}
