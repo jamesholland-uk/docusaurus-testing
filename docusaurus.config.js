@@ -67,7 +67,7 @@ const config = {
             type: 'doc',
             docId: 'intro',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Ansible for PAN-OS',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {

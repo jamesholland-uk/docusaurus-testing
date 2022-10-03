@@ -28,7 +28,7 @@ Create a new Ansible yaml file named `device-group-changes-commit-and-push.yml`,
     - paloaltonetworks.panos
 ```
 
-## Make the configuration changes
+## Make configuration changes
 
 Start the playbook tasks by defining the desired configuration state, some new configuration elements within the Device Group:
 
@@ -90,10 +90,3 @@ Continue the tasks with a push (and commit) to the managed devices in the Device
     - debug:
         msg: "Push with job ID: {{ results.jobid }} finished"
 ```
-
-## Test importing code
-
-import CodeBlock from '@theme/CodeBlock';
-import MyComponentSource from '!!raw-loader!./panorama-config-commit-push.md';
-
-<CodeBlock language="jsx">{MyComponentSource}</CodeBlock>
