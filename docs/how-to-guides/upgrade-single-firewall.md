@@ -67,7 +67,7 @@ We now want to wait until the firewall has rebooted and is ready to pass traffic
       delay: 15
 ```
 
-## Final message
+## Result message
 
 The final task returns the last value of the result message, which should confirm the device is ready after the upgrade and reboot, but in the case of any issues, will confirm the status of the firewall at the end of the playbook execution:
 
