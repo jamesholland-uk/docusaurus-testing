@@ -36,8 +36,8 @@ Start the playbook tasks with the `panos_software` module, which in one task wil
   tasks:
     - name: Install target PAN-OS version
       paloaltonetworks.panos.panos_software:
-        provider: '{{ device }}'
-        version: '{{ version }}'
+        provider: "{{ device }}"
+        version: "10.2.3"
         download: true
         install: true
         restart: true
@@ -72,6 +72,52 @@ We now want to wait until the firewall has rebooted and is ready to pass traffic
 The final task returns the last value of the result message, which should confirm the device is ready after the upgrade and reboot, but in the case of any issues, will confirm the status of the firewall at the end of the playbook execution:
 
 ```yaml
+    - name: Display output
+      debug:
+        msg: "{{ result.msg }}"
+```
+
+## Final playbook
+
+Putting all the sections together, the playbook in entirety looks like this:
+
+```yaml
+---
+- hosts: '{{ target | default("firewall") }}'
+  connection: local
+
+  vars:
+    provider:
+      ip_address: "{{ ip_address }}"
+      username: "{{ username | default(omit) }}"
+      password: "{{ password | default(omit) }}"
+      api_key: "{{ api_key | default(omit) }}"
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+    - name: Install target PAN-OS version
+      paloaltonetworks.panos.panos_software:
+        provider: "{{ device }}"
+        version: "10.2.3"
+        download: true
+        install: true
+        restart: true
+
+    - name: Pause for restart
+      pause:
+        seconds: 30
+
+    - name: Check if PAN-OS appliance is ready
+      paloaltonetworks.panos.panos_check:
+        provider: "{{ device }}"
+      changed_when: false
+      register: result
+      until: result is not failed and result.msg == 'Device is ready.'
+      retries: 100
+      delay: 15
+
     - name: Display output
       debug:
         msg: "{{ result.msg }}"

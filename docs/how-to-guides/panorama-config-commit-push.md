@@ -37,21 +37,21 @@ Start the playbook tasks by defining the desired configuration state, some new c
     - name: Create address object
       panos_address_object:
         provider: "{{ provider }}"
-        device_group: "{{ devicegroup }}"
+        device_group: "lab-device-group"
         name: "Object-One"
         value: "1.1.1.1"
 
     - name: Create service object
       panos_service_object:
         provider: "{{ provider }}"
-        device_group: "{{ devicegroup }}"
+        device_group: "lab-device-group"
         name: "tcp-12345"
         destination_port: "12345"
 
     - name: Add security rule
       panos_security_rule:
         provider: "{{ provider }}"
-        device_group: "{{ devicegroup }}"
+        device_group: "lab-device-group"
         rule_name: "Allow SSH on port 12345"
         source_zone: ["internet"]
         source_ip: ["any"]
@@ -84,9 +84,76 @@ Continue the tasks with a push (and commit) to the managed devices in the Device
       panos_commit_push:
         provider: "{{ provider }}"
         style: "device group"
-        name: "{{ devicegroup }}"
+        name: "lab-device-group"
         include_template: no
       register: results
+    - debug:
+        msg: "Push with job ID: {{ results.jobid }} finished"
+```
+
+## Final playbook
+
+Putting all the sections together, the playbook in entirety looks like this:
+
+```yaml
+---
+- hosts: '{{ target | default("panorama") }}'
+  connection: local
+
+  vars:
+    provider:
+      ip_address: "{{ ip_address }}"
+      username: "{{ username | default(omit) }}"
+      password: "{{ password | default(omit) }}"
+      api_key: "{{ api_key | default(omit) }}"
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+    - name: Create address object
+      panos_address_object:
+        provider: "{{ provider }}"
+        device_group: "lab-device-group"
+        name: "Object-One"
+        value: "1.1.1.1"
+
+    - name: Create service object
+      panos_service_object:
+        provider: "{{ provider }}"
+        device_group: "lab-device-group"
+        name: "tcp-12345"
+        destination_port: "12345"
+
+    - name: Add security rule
+      panos_security_rule:
+        provider: "{{ provider }}"
+        device_group: "lab-device-group"
+        rule_name: "Allow SSH on port 12345"
+        source_zone: ["internet"]
+        source_ip: ["any"]
+        destination_zone: ["dmz"]
+        destination_ip: ["Object-One"]
+        application: ["ssh"]
+        service: ["tcp-22"]
+        action: "allow"
+
+    - name: Commit candidate configuration
+      panos_commit_panorama:
+        provider: "{{ provider }}"
+      register: results
+
+    - debug:
+        msg: "Commit with job ID: {{ results.jobid }} had output: {{ results.details }}"
+
+    - name: Commit and Push template configuration
+      panos_commit_push:
+        provider: "{{ provider }}"
+        style: "device group"
+        name: "lab-device-group"
+        include_template: no
+      register: results
+
     - debug:
         msg: "Push with job ID: {{ results.jobid }} finished"
 ```
